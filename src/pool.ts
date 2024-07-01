@@ -73,14 +73,19 @@ export function handleReceipt(event: ReceiptEvent): void {
 
   ztx.save()
 
-  let note = new Note(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
-  note.leafIndex = event.params.lastLeafIndex
-  note.revokerId = event.params.revokerId
-  note.noteMemos = event.params.noteMemos
+  let noteMemos = event.params.noteMemos
+  let lastLeafIndex = event.params.lastLeafIndex
+  let revokerId = event.params.revokerId
 
-  note.save()
+  for (let i = 0; i < noteMemos.length; i++) {
+    let note = new Note(event.transaction.hash.toHex() + "-" + event.logIndex.toString() + "-" + i.toString())
+    note.leafIndex = lastLeafIndex.minus(BigInt.fromI32(i))
+    note.revokerId = revokerId
+    note.noteMemos = [noteMemos[i]]
+    note.save()
+  }
 
-    // Create and save the History entity
+  // Create and save the History entity
   let history = new History(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
   
   history.txType = event.params.txType as i32
