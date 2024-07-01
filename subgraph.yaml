@@ -30,23 +30,10 @@ dataSources:
         - name: Pool
           file: ./abis/Pool.json
       eventHandlers:
-        # - event: Announcement(indexed uint256,indexed uint256,bytes)
-        #   handler: handleAnnouncement
-        #   receipt: true
         - event: AssetAdded(indexed address,uint24)
           handler: handleAssetAdded
-        # - event: ComplianceMemo(bytes)
-        #   handler: handleComplianceMemo
-        - event: Initialized(uint64)
-          handler: handleInitialized
-        # - event: InputNoteMemos(bytes)
-        #   handler: handleInputNoteMemos
         - event: NullifierMarked(indexed uint256)
           handler: handleNullifierMarked
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: Upgraded(indexed address)
-          handler: handleUpgraded
         - event: Receipt(indexed uint8,indexed uint16,uint32,address,uint24,uint96,address,bytes,bytes,bytes[])
           handler: handleReceipt
           receipt: true
