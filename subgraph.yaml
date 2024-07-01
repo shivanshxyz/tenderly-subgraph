@@ -1,0 +1,59 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Pool
+    network: sepolia
+    source:
+      address: "0x930b74A230d0021EF11f2A0FE4E954D94926dabF"
+      abi: Pool
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Announcement
+        - AssetAdded
+        - ComplianceMemo
+        - Initialized
+        - InputNoteMemos
+        - NullifierMarked
+        - OwnershipTransferred
+        - Upgraded
+        - Receipt
+        - Revoker
+      abis:
+        - name: Pool
+          file: ./abis/Pool.json
+      eventHandlers:
+        # - event: Announcement(indexed uint256,indexed uint256,bytes)
+        #   handler: handleAnnouncement
+        #   receipt: true
+        - event: AssetAdded(indexed address,uint24)
+          handler: handleAssetAdded
+        # - event: ComplianceMemo(bytes)
+        #   handler: handleComplianceMemo
+        - event: Initialized(uint64)
+          handler: handleInitialized
+        # - event: InputNoteMemos(bytes)
+        #   handler: handleInputNoteMemos
+        - event: NullifierMarked(indexed uint256)
+          handler: handleNullifierMarked
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Upgraded(indexed address)
+          handler: handleUpgraded
+        - event: Receipt(indexed uint8,indexed uint16,uint32,address,uint24,uint96,address,bytes,bytes,bytes[])
+          handler: handleReceipt
+          receipt: true
+        - event: RevokerRegistered(indexed uint256,uint256[2],uint256[2],bytes)
+          handler: handleRevokerRegistered
+        - event: RevokerStatusUpdated(indexed uint256,bool)
+          handler: handleRevokerStatusUpdated
+        - event: Commitment(indexed uint256,indexed uint256)
+          handler: handleCommitment
+      file: ./src/pool.ts

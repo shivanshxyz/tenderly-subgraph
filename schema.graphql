@@ -1,0 +1,171 @@
+type Announcement @entity(immutable: true) {
+  id: String!
+  leafIndex: BigInt! # uint256
+  commitment: BigInt! # uint256
+  outMemo: Bytes! # bytes
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+  transactionFrom: Bytes!
+  # transactionTo: Bytes!
+  transactionInput: Bytes!
+}
+
+type Receipt @entity {
+  id: ID!
+  txType: Int!
+  revokerId: Int!
+  lastLeafIndex: BigInt!
+  target: Bytes!
+  feeAssetId: Int!
+  feeValue: BigInt!
+  paymaster: Bytes!
+  assetMemo: Bytes!
+  complianceMemo: Bytes!
+  noteMemos: [Bytes!]!
+}
+
+enum ZTransactionType {
+    DEPOSIT,
+    TRANSFER,
+    WITHDRAW,
+    CONVERT
+}
+
+type Note @entity {
+  id: ID!
+  leafIndex: BigInt!
+  revokerId: Int!
+  noteMemos: [Bytes!]!
+}
+
+type History @entity {
+  id: ID!
+  txType: Int!
+  revokerId: Int!
+  lastLeafIndex: BigInt!
+  target: Bytes!
+  feeAssetId: Int!
+  feeValue: BigInt!
+  paymaster: Bytes!
+  assetMemo: Bytes!
+  complianceMemo: Bytes!
+  timestamp: BigInt!
+  txHash: Bytes!
+  blockNumber: Int!
+  gas: BigInt!
+}
+
+type Commitment @entity {
+  id: ID!
+  leafIndex: BigInt!
+  commitment: BigInt!
+}
+
+
+type RevokerData @entity {
+  id: ID!
+  revokerId: BigInt!
+  revokerPublicKey: [BigInt!]!
+  encryptionPublicKey: [BigInt!]!
+  metadata: Bytes
+  status: Boolean!
+}
+
+type AssetAdded @entity(immutable: true) {
+  id: Bytes!
+  assetAddress: Bytes! # address
+  assetId: Int! # uint24
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ComplianceMemo @entity(immutable: true) {
+  id: Bytes!
+  complianceMemo: Bytes! # bytes
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Initialized @entity(immutable: true) {
+  id: Bytes!
+  version: BigInt! # uint64
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type InputNoteMemos @entity(immutable: true) {
+  id: Bytes!
+  inMemos: Bytes! # bytes
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type NullifierMarked @entity(immutable: true) {
+  id: Bytes!
+  nullifier: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  previousOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Upgraded @entity(immutable: true) {
+  id: Bytes!
+  implementation: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ZTransaction @entity {
+  id: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+  input: Bytes!
+  gasUsed: BigInt!
+  gasPrice: BigInt!
+  status: BigInt!
+  sender: Bytes
+  nonce: BigInt
+  initCode: Bytes
+  callData: Bytes
+  accountGasLimits: Bytes
+  preVerificationGas: BigInt
+  gasFees: Bytes
+  paymasterAndData: Bytes
+  signature: Bytes
+  beneficiary: Bytes
+  methodId: String!
+}
+
+# type ZTransactionInput @entity {
+#   id: Bytes!
+#   txType: Int!
+#   revokerId: Int!
+#   addressTreeRoot: String!
+#   commitmentTreeRoot: String!
+#   feeData: String!
+#   pubAssets: [String!]!
+#   nullifiers: [String!]!
+#   commitments: [String!]!
+#   proof: String!
+#   noteMemos: [String!]!
+#   assetMemo: String!
+#   complianceMemo: String!
+#   targetData: String!
+#   refundData: String!
+# }

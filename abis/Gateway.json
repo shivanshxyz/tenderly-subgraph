@@ -1,0 +1,412 @@
+[
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "entryPoint_",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "wToken_",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "pool_",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "entryPoint",
+          "type": "address"
+        }
+      ],
+      "name": "InvalidEntryPoint",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "entryPoint",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "enum ZTransactionType",
+              "name": "txType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes",
+              "name": "proof",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "merkleRoot",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint24[]",
+              "name": "pubAssetIds",
+              "type": "uint24[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "pubValues",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "nullifiers",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "commitments",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "inMemos",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes[]",
+              "name": "outMemos",
+              "type": "bytes[]"
+            },
+            {
+              "internalType": "uint256",
+              "name": "feeData",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "beneficiary",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "beneficiaryMemo",
+              "type": "bytes"
+            },
+            {
+              "internalType": "address",
+              "name": "target",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "targetPayload",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "complianceMemo",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct ZTransaction",
+          "name": "ztx",
+          "type": "tuple"
+        }
+      ],
+      "name": "handleUserOp",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "enum ZTransactionType",
+              "name": "txType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes",
+              "name": "proof",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "merkleRoot",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint24[]",
+              "name": "pubAssetIds",
+              "type": "uint24[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "pubValues",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "nullifiers",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "commitments",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "inMemos",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes[]",
+              "name": "outMemos",
+              "type": "bytes[]"
+            },
+            {
+              "internalType": "uint256",
+              "name": "feeData",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "beneficiary",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "beneficiaryMemo",
+              "type": "bytes"
+            },
+            {
+              "internalType": "address",
+              "name": "target",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "targetPayload",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "complianceMemo",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct ZTransaction",
+          "name": "ztx",
+          "type": "tuple"
+        }
+      ],
+      "name": "handleWrapAndDeposit",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "initCode",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "callData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "accountGasLimits",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "preVerificationGas",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "gasFees",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "paymasterAndData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct PackedUserOperation",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "validateUserOp",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "validationData",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "wToken",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address payable",
+          "name": "withdrawAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawEntryPointDepositTo",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ]

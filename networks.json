@@ -1,0 +1,8 @@
+{
+  "sepolia": {
+    "Pool": {
+      "address": "0x930b74A230d0021EF11f2A0FE4E954D94926dabF",
+      "startBlock": 0
+    }
+  }
+}
