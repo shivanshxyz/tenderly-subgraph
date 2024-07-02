@@ -26,6 +26,7 @@ dataSources:
         - Upgraded
         - Receipt
         - Revoker
+        - RegisterAddress
       abis:
         - name: Pool
           file: ./abis/Pool.json
@@ -43,4 +44,6 @@ dataSources:
           handler: handleRevokerStatusUpdated
         - event: Commitment(indexed uint256,indexed uint256)
           handler: handleCommitment
+        - event: RegisterAddress(address,uint256,uint256,bytes)
+          handler: handleRegisterAddress
       file: ./src/pool.ts

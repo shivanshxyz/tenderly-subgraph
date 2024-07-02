@@ -97,3 +97,11 @@ type ZTransaction @entity {
   beneficiary: Bytes
   methodId: String!
 }
+
+type RegisterAddress @entity {
+  id: ID!
+  sender: Bytes!
+  addr: BigInt!
+  leafIndex: BigInt!
+  publicKeys: Bytes!
+}
