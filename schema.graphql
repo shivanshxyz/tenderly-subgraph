@@ -68,9 +68,10 @@ type AssetAdded @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NullifierMarked @entity(immutable: true) {
-  id: Bytes!
-  nullifier: BigInt! # uint256
+type NullifierMarked @entity {
+  id: ID!
+  nullifier: BigInt!
+  markLeafIndex: Int!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
@@ -101,7 +102,7 @@ type ZTransaction @entity {
 type RegisterAddress @entity {
   id: ID!
   sender: Bytes!
-  addr: BigInt!
+  address: BigInt!
   leafIndex: BigInt!
   publicKeys: Bytes!
 }

@@ -33,7 +33,7 @@ dataSources:
       eventHandlers:
         - event: AssetAdded(indexed address,uint24)
           handler: handleAssetAdded
-        - event: NullifierMarked(indexed uint256)
+        - event: NullifierMarked(indexed uint256,uint32)
           handler: handleNullifierMarked
         - event: Receipt(indexed uint8,indexed uint16,uint32,address,uint24,uint96,address,bytes,bytes,bytes[])
           handler: handleReceipt
@@ -44,6 +44,6 @@ dataSources:
           handler: handleRevokerStatusUpdated
         - event: Commitment(indexed uint256,indexed uint256)
           handler: handleCommitment
-        - event: RegisterAddress(address,uint256,uint256,bytes)
+        - event: RegisterAddress(indexed address,indexed uint256,uint256,bytes)
           handler: handleRegisterAddress
       file: ./src/pool.ts

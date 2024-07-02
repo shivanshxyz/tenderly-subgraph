@@ -6,6 +6,7 @@ import {
   Receipt as ReceiptEvent,
   RevokerRegistered as RevokerRegisteredEvent,
   RevokerStatusUpdated as RevokerStatusUpdatedEvent,
+  RegisterAddress as RegisterAddressEvent
 } from "../generated/Pool/Pool"
 import {
   AssetAdded,
@@ -16,35 +17,36 @@ import {
   RevokerData,
   History,
   ZTransaction,
+  RegisterAddress,
 } from "../generated/schema"
 
 // Event handler functions
 export function handleAssetAdded(event: AssetAddedEvent): void {
-  let entity = new AssetAdded(
+  let assetAdded = new AssetAdded(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
-  entity.assetAddress = event.params.assetAddress
-  entity.assetId = event.params.assetId
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-  entity.save()
+  assetAdded.assetAddress = event.params.assetAddress
+  assetAdded.assetId = event.params.assetId
+  assetAdded.blockNumber = event.block.number
+  assetAdded.blockTimestamp = event.block.timestamp
+  assetAdded.transactionHash = event.transaction.hash
+  assetAdded.save()
 }
 
 export function handleCommitment(event: CommitmentEvent): void {
-  let entity = new Commitment(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
-  entity.leafIndex = event.params.leafIndex
-  entity.commitment = event.params.commitment
-  entity.save()
+  let commitment = new Commitment(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
+  commitment.leafIndex = event.params.leafIndex
+  commitment.commitment = event.params.commitment
+  commitment.save()
 }
 
 export function handleNullifierMarked(event: NullifierMarkedEvent): void {
-  let entity = new NullifierMarked(event.transaction.hash.concatI32(event.logIndex.toI32()))
-  entity.nullifier = event.params.nullifier
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-  entity.save()
+  let nullifierMarked = new NullifierMarked(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
+  nullifierMarked.nullifier = event.params.nullifier
+  nullifierMarked.blockNumber = event.block.number
+  nullifierMarked.blockTimestamp = event.block.timestamp
+  nullifierMarked.transactionHash = event.transaction.hash
+  nullifierMarked.save()
 }
 
 export function handleReceipt(event: ReceiptEvent): void {
