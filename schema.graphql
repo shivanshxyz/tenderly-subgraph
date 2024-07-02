@@ -23,7 +23,7 @@ type Note @entity {
   id: ID!
   leafIndex: BigInt!
   revokerId: Int!
-  noteMemos: [Bytes!]!
+  noteMemos: Bytes!
 }
 
 type History @entity {

@@ -81,7 +81,7 @@ export function handleReceipt(event: ReceiptEvent): void {
     let note = new Note(event.transaction.hash.toHex() + "-" + event.logIndex.toString() + "-" + i.toString())
     note.leafIndex = lastLeafIndex.minus(BigInt.fromI32(i))
     note.revokerId = revokerId
-    note.noteMemos = [noteMemos[i]]
+    note.noteMemos = noteMemos[i]
     note.save()
   }
 
@@ -116,7 +116,7 @@ export function handleRevokerRegistered(event: RevokerRegisteredEvent): void {
     event.params.encryptionPublicKey[1]
   ]
   revoker.metadata = event.params.metadata
-  revoker.status = false
+  revoker.status = true
   revoker.revokerId = event.params.id
   revoker.save()
 }
@@ -127,4 +127,15 @@ export function handleRevokerStatusUpdated(event: RevokerStatusUpdatedEvent): vo
     revoker.status = event.params.status
     revoker.save()
   }
+}
+
+export function handleRegisterAddress(event: RegisterAddressEvent): void {
+  let registerAddress = new RegisterAddress(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
+
+  registerAddress.sender = event.params.sender
+  registerAddress.addr = event.params.addr
+  registerAddress.leafIndex = event.params.leafIndex
+  registerAddress.publicKeys = event.params.publicKeys
+
+  registerAddress.save()
 }
