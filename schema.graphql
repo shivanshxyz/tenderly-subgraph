@@ -68,22 +68,6 @@ type AssetAdded @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type ComplianceMemo @entity(immutable: true) {
-  id: Bytes!
-  complianceMemo: Bytes! # bytes
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type InputNoteMemos @entity(immutable: true) {
-  id: Bytes!
-  inMemos: Bytes! # bytes
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
 type NullifierMarked @entity(immutable: true) {
   id: Bytes!
   nullifier: BigInt! # uint256

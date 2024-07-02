@@ -48,30 +48,30 @@ export function handleNullifierMarked(event: NullifierMarkedEvent): void {
 }
 
 export function handleReceipt(event: ReceiptEvent): void {
-  let receipt = new Receipt(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
-  receipt.txType = event.params.txType
-  receipt.revokerId = event.params.revokerId
-  receipt.lastLeafIndex = event.params.lastLeafIndex
-  receipt.target = event.params.target
-  receipt.feeAssetId = event.params.feeAssetId
-  receipt.feeValue = event.params.feeValue
-  receipt.paymaster = event.params.paymaster
-  receipt.assetMemo = event.params.assetMemo
-  receipt.complianceMemo = event.params.complianceMemo
-  receipt.noteMemos = event.params.noteMemos
+  // let receipt = new Receipt(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
+  // receipt.txType = event.params.txType
+  // receipt.revokerId = event.params.revokerId
+  // receipt.lastLeafIndex = event.params.lastLeafIndex
+  // receipt.target = event.params.target
+  // receipt.feeAssetId = event.params.feeAssetId
+  // receipt.feeValue = event.params.feeValue
+  // receipt.paymaster = event.params.paymaster
+  // receipt.assetMemo = event.params.assetMemo
+  // receipt.complianceMemo = event.params.complianceMemo
+  // receipt.noteMemos = event.params.noteMemos
 
-  receipt.save()
+  // receipt.save()
 
-  let ztx = new ZTransaction(event.transaction.hash)
-  ztx.blockNumber = event.block.number
-  ztx.blockTimestamp = event.block.timestamp
-  ztx.transactionHash = event.transaction.hash
-  ztx.input = event.transaction.input
-  ztx.gasUsed = event.receipt!.gasUsed
-  ztx.gasPrice = event.transaction.gasPrice
-  ztx.status = event.receipt!.status
+  // let ztx = new ZTransaction(event.transaction.hash)
+  // ztx.blockNumber = event.block.number
+  // ztx.blockTimestamp = event.block.timestamp
+  // ztx.transactionHash = event.transaction.hash
+  // ztx.input = event.transaction.input
+  // ztx.gasUsed = event.receipt!.gasUsed
+  // ztx.gasPrice = event.transaction.gasPrice
+  // ztx.status = event.receipt!.status
 
-  ztx.save()
+  // ztx.save()
 
   let noteMemos = event.params.noteMemos
   let lastLeafIndex = event.params.lastLeafIndex

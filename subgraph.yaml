@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: Pool
-    network: sepolia
+    network: optimism-sepolia
     source:
-      address: "0x930b74A230d0021EF11f2A0FE4E954D94926dabF"
+      address: "0xc4a48A3Ab49950e35F2bBdD0cd9C065845F4324f"
       abi: Pool
-      startBlock: 0
+      startBlock: 14031594
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
