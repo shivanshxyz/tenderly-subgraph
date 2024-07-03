@@ -22,30 +22,28 @@ import {
 
 // Event handler functions
 export function handleAssetAdded(event: AssetAddedEvent): void {
-  let assetAdded = new AssetAdded(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  let asset = new AssetAdded(
+    event.params.assetId.toString()
   )
-  assetAdded.assetAddress = event.params.assetAddress
-  assetAdded.assetId = event.params.assetId
-  assetAdded.blockNumber = event.block.number
-  assetAdded.blockTimestamp = event.block.timestamp
-  assetAdded.transactionHash = event.transaction.hash
-  assetAdded.save()
+  asset.assetAddress = event.params.assetAddress
+  asset.assetId = event.params.assetId
+  // asset.blockNumber = event.block.number
+  // asset.blockTimestamp = event.block.timestamp
+  // asset.transactionHash = event.transaction.hash
+  asset.save()
 }
 
 export function handleCommitment(event: CommitmentEvent): void {
-  let commitment = new Commitment(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
+  let commitment = new Commitment(event.params.leafIndex.toString() + "-" + event.params.commitment.toString())
   commitment.leafIndex = event.params.leafIndex
   commitment.commitment = event.params.commitment
   commitment.save()
 }
 
 export function handleNullifierMarked(event: NullifierMarkedEvent): void {
-  let nullifierMarked = new NullifierMarked(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
+  let nullifierMarked = new NullifierMarked(event.params.nullifier.toString())
   nullifierMarked.nullifier = event.params.nullifier
-  nullifierMarked.blockNumber = event.block.number
-  nullifierMarked.blockTimestamp = event.block.timestamp
-  nullifierMarked.transactionHash = event.transaction.hash
+  nullifierMarked.markLeafIndex = event.params.markLeafIndex
   nullifierMarked.save()
 }
 
@@ -132,10 +130,10 @@ export function handleRevokerStatusUpdated(event: RevokerStatusUpdatedEvent): vo
 }
 
 export function handleRegisterAddress(event: RegisterAddressEvent): void {
-  let registerAddress = new RegisterAddress(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
+  let registerAddress = new RegisterAddress(event.transaction.hash.toHex())
 
   registerAddress.sender = event.params.sender
-  registerAddress.addr = event.params.addr
+  registerAddress.address = event.params.addr
   registerAddress.leafIndex = event.params.leafIndex
   registerAddress.publicKeys = event.params.publicKeys
 

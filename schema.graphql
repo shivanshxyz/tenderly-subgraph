@@ -60,21 +60,21 @@ type RevokerData @entity {
 }
 
 type AssetAdded @entity(immutable: true) {
-  id: Bytes!
+  id: String!
   assetAddress: Bytes! # address
   assetId: Int! # uint24
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  # blockNumber: BigInt!
+  # blockTimestamp: BigInt!
+  # transactionHash: Bytes!
 }
 
 type NullifierMarked @entity {
   id: ID!
   nullifier: BigInt!
-  markLeafIndex: Int!
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  markLeafIndex: BigInt!
+  # blockNumber: BigInt!
+  # blockTimestamp: BigInt!
+  # transactionHash: Bytes!
 }
 
 type ZTransaction @entity {
@@ -101,8 +101,8 @@ type ZTransaction @entity {
 
 type RegisterAddress @entity {
   id: ID!
-  sender: Bytes!
-  address: BigInt!
-  leafIndex: BigInt!
-  publicKeys: Bytes!
+  sender: Bytes
+  address: BigInt
+  leafIndex: BigInt
+  publicKeys: Bytes
 }
