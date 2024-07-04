@@ -104,5 +104,5 @@ type RegisterAddress @entity {
   sender: Bytes
   rootAddress: BigInt
   leafIndex: BigInt
-  publicKeys: Bytes
+  shieldedAddress: Bytes
 }

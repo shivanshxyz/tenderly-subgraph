@@ -135,7 +135,7 @@ export function handleRegisterAddress(event: RegisterAddressEvent): void {
   registerAddress.sender = event.params.sender
   registerAddress.rootAddress = event.params.rootAddress
   registerAddress.leafIndex = event.params.leafIndex
-  registerAddress.publicKeys = event.params.publicKeys
+  registerAddress.shieldedAddress = event.params.shieldedAddress
 
   registerAddress.save()
 }

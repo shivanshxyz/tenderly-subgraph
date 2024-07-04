@@ -8,9 +8,9 @@ dataSources:
     name: Pool
     network: optimism-sepolia
     source:
-      address: "0x31F9FCbd3b5ff41fb63E4B2CC04D262a2028f603"
+      address: "0xF7839c7991975A4dd03d212A869ED39B212DeB4a"
       abi: Pool
-      startBlock: 14031594
+      startBlock: 14149220
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
