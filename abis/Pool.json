@@ -101,6 +101,49 @@
   },
   {
       "type": "function",
+      "name": "eip712Domain",
+      "inputs": [],
+      "outputs": [
+          {
+              "name": "fields",
+              "type": "bytes1",
+              "internalType": "bytes1"
+          },
+          {
+              "name": "name",
+              "type": "string",
+              "internalType": "string"
+          },
+          {
+              "name": "version",
+              "type": "string",
+              "internalType": "string"
+          },
+          {
+              "name": "chainId",
+              "type": "uint256",
+              "internalType": "uint256"
+          },
+          {
+              "name": "verifyingContract",
+              "type": "address",
+              "internalType": "address"
+          },
+          {
+              "name": "salt",
+              "type": "bytes32",
+              "internalType": "bytes32"
+          },
+          {
+              "name": "extensions",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
+          }
+      ],
+      "stateMutability": "view"
+  },
+  {
+      "type": "function",
       "name": "getAddressTreeCurrentRootIndex",
       "inputs": [],
       "outputs": [
@@ -571,12 +614,7 @@
       "name": "registerAddress",
       "inputs": [
           {
-              "name": "addr",
-              "type": "uint256",
-              "internalType": "uint256"
-          },
-          {
-              "name": "publicKeys",
+              "name": "shieldedAddress",
               "type": "bytes",
               "internalType": "bytes"
           },
@@ -896,7 +934,7 @@
       ],
       "outputs": [
           {
-              "name": "",
+              "name": "result",
               "type": "bool",
               "internalType": "bool"
           }
@@ -919,6 +957,24 @@
   {
       "type": "function",
       "name": "withdrawPaymasterFee",
+      "inputs": [
+          {
+              "name": "assetId",
+              "type": "uint24",
+              "internalType": "uint24"
+          },
+          {
+              "name": "to",
+              "type": "address",
+              "internalType": "address"
+          }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+  },
+  {
+      "type": "function",
+      "name": "withdrawProtocolFee",
       "inputs": [
           {
               "name": "assetId",
@@ -989,6 +1045,12 @@
               "internalType": "uint256"
           }
       ],
+      "anonymous": false
+  },
+  {
+      "type": "event",
+      "name": "EIP712DomainChanged",
+      "inputs": [],
       "anonymous": false
   },
   {
@@ -1133,16 +1195,16 @@
               "internalType": "address"
           },
           {
-              "name": "addr",
+              "name": "rootAddress",
               "type": "uint256",
               "indexed": true,
               "internalType": "uint256"
           },
           {
               "name": "leafIndex",
-              "type": "uint256",
+              "type": "uint32",
               "indexed": false,
-              "internalType": "uint256"
+              "internalType": "uint32"
           },
           {
               "name": "publicKeys",
@@ -1228,17 +1290,6 @@
           }
       ],
       "anonymous": false
-  },
-  {
-      "type": "error",
-      "name": "AddressAlreadyRegistered",
-      "inputs": [
-          {
-              "name": "addr",
-              "type": "uint256",
-              "internalType": "uint256"
-          }
-      ]
   },
   {
       "type": "error",
@@ -1402,8 +1453,30 @@
   },
   {
       "type": "error",
+      "name": "PublicAddressAlreadyRegistered",
+      "inputs": [
+          {
+              "name": "addr",
+              "type": "address",
+              "internalType": "address"
+          }
+      ]
+  },
+  {
+      "type": "error",
       "name": "ReentrancyGuardReentrantCall",
       "inputs": []
+  },
+  {
+      "type": "error",
+      "name": "RootAddressAlreadyRegistered",
+      "inputs": [
+          {
+              "name": "addr",
+              "type": "uint256",
+              "internalType": "uint256"
+          }
+      ]
   },
   {
       "type": "error",

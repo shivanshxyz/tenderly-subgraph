@@ -133,7 +133,7 @@ export function handleRegisterAddress(event: RegisterAddressEvent): void {
   let registerAddress = new RegisterAddress(event.transaction.hash.toHex())
 
   registerAddress.sender = event.params.sender
-  registerAddress.address = event.params.addr
+  registerAddress.rootAddress = event.params.rootAddress
   registerAddress.leafIndex = event.params.leafIndex
   registerAddress.publicKeys = event.params.publicKeys
 

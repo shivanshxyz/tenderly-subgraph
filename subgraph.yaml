@@ -8,7 +8,7 @@ dataSources:
     name: Pool
     network: optimism-sepolia
     source:
-      address: "0xc4a48A3Ab49950e35F2bBdD0cd9C065845F4324f"
+      address: "0x31F9FCbd3b5ff41fb63E4B2CC04D262a2028f603"
       abi: Pool
       startBlock: 14031594
     mapping:
@@ -44,6 +44,6 @@ dataSources:
           handler: handleRevokerStatusUpdated
         - event: Commitment(indexed uint256,indexed uint256)
           handler: handleCommitment
-        - event: RegisterAddress(indexed address,indexed uint256,uint256,bytes)
+        - event: RegisterAddress(indexed address,indexed uint256,uint32,bytes)
           handler: handleRegisterAddress
       file: ./src/pool.ts

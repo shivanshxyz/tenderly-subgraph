@@ -102,7 +102,7 @@ type ZTransaction @entity {
 type RegisterAddress @entity {
   id: ID!
   sender: Bytes
-  address: BigInt
+  rootAddress: BigInt
   leafIndex: BigInt
   publicKeys: Bytes
 }
