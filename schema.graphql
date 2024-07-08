@@ -2,7 +2,7 @@ type Receipt @entity {
   id: ID!
   txType: Int!
   revokerId: Int!
-  lastLeafIndex: BigInt!
+  lastLeafIndex: Int!
   target: Bytes!
   feeAssetId: Int!
   feeValue: BigInt!
@@ -10,6 +10,7 @@ type Receipt @entity {
   assetMemo: Bytes!
   complianceMemo: Bytes!
   noteMemos: [Bytes!]!
+  txHash: Bytes!
 }
 
 enum ZTransactionType {
@@ -21,16 +22,17 @@ enum ZTransactionType {
 
 type Note @entity {
   id: ID!
-  leafIndex: BigInt!
+  leafIndex: Int!
   revokerId: Int!
-  noteMemos: Bytes!
+  memo: Bytes!
+  timestamp: BigInt!
 }
 
 type History @entity {
   id: ID!
   txType: Int!
   revokerId: Int!
-  lastLeafIndex: BigInt!
+  lastLeafIndex: Int!
   target: Bytes!
   feeAssetId: Int!
   feeValue: BigInt!
@@ -40,19 +42,20 @@ type History @entity {
   timestamp: BigInt!
   txHash: Bytes!
   blockNumber: Int!
-  gas: BigInt!
+  gasPrice: BigInt!
+  gasUsed: BigInt!
 }
 
 type Commitment @entity {
   id: ID!
-  leafIndex: BigInt!
+  leafIndex: Int!
   commitment: BigInt!
 }
 
 
 type RevokerData @entity {
   id: ID!
-  revokerId: BigInt!
+  revokerId: Int!
   revokerPublicKey: [BigInt!]!
   encryptionPublicKey: [BigInt!]!
   metadata: Bytes
@@ -71,7 +74,7 @@ type AssetAdded @entity(immutable: true) {
 type NullifierMarked @entity {
   id: ID!
   nullifier: BigInt!
-  markLeafIndex: BigInt!
+  markLeafIndex: Int!
   # blockNumber: BigInt!
   # blockTimestamp: BigInt!
   # transactionHash: Bytes!
@@ -103,6 +106,6 @@ type RegisterAddress @entity {
   id: ID!
   sender: Bytes
   rootAddress: BigInt
-  leafIndex: BigInt
+  leafIndex: Int
   shieldedAddress: Bytes
 }
