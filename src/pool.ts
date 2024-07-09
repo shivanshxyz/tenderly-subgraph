@@ -69,7 +69,8 @@ export function handleReceipt(event: ReceiptEvent): void {
 
   for (let i = 0; i < noteMemos.length; i++) {
     let note = new Note(event.transaction.hash.toHex() + "-" + event.params.lastLeafIndex.toString() + "-" + i.toString())
-    note.leafIndex = lastLeafIndex.minus(BigInt.fromI32(i)).toI32()
+    note.leafIndex = lastLeafIndex.minus(BigInt.fromI32(noteMemos.length - 1 - i)).toI32();
+    // note.leafIndex = lastLeafIndex.toI32() - noteMemos.length + i
     note.revokerId = revokerId
     note.memo = noteMemos[i]
     note.timestamp = event.block.timestamp
