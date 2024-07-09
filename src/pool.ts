@@ -89,6 +89,7 @@ export function handleReceipt(event: ReceiptEvent): void {
   history.paymaster = event.params.paymaster
   history.assetMemo = event.params.assetMemo
   history.complianceMemo = event.params.complianceMemo
+  history.noteMemos = event.params.noteMemos
   history.timestamp = event.block.timestamp
   history.txHash = event.transaction.hash
   history.blockNumber = event.block.number.toI32()

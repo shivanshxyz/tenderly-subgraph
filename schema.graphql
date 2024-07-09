@@ -39,6 +39,7 @@ type History @entity {
   paymaster: Bytes!
   assetMemo: Bytes!
   complianceMemo: Bytes!
+  noteMemos: [Bytes!]!
   timestamp: BigInt!
   txHash: Bytes!
   blockNumber: Int!
