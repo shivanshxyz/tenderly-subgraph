@@ -1,4 +1,4 @@
-import { ethereum, Bytes, Address, BigInt, log } from "@graphprotocol/graph-ts"
+import { ethereum, Bytes, Address, BigInt, log, crypto } from "@graphprotocol/graph-ts"
 import {
   AssetAdded as AssetAddedEvent,
   Commitment as CommitmentEvent,
@@ -34,7 +34,7 @@ export function handleAssetAdded(event: AssetAddedEvent): void {
 }
 
 export function handleCommitment(event: CommitmentEvent): void {
-  let commitment = new Commitment(event.params.leafIndex.toString() + "-" + event.params.commitment.toString())
+  let commitment = new Commitment(event.params.leafIndex.toString())
   commitment.leafIndex = event.params.leafIndex.toI32()
   commitment.commitment = event.params.commitment
   commitment.save()
@@ -48,7 +48,13 @@ export function handleNullifierMarked(event: NullifierMarkedEvent): void {
 }
 
 export function handleReceipt(event: ReceiptEvent): void {
-  let receipt = new Receipt(event.transaction.hash.toHex() + "-" + event.params.revokerId.toString() + "-" + event.params.lastLeafIndex.toString())
+  let leafIndex = Bytes.fromBigInt(event.params.lastLeafIndex);
+  let txHash = event.transaction.hash;
+  let combinedBytes = leafIndex.concat(txHash);
+
+  let id = crypto.keccak256(combinedBytes);
+
+  let receipt = new Receipt(id.toHex());
   receipt.txType = event.params.txType
   receipt.revokerId = event.params.revokerId
   receipt.lastLeafIndex = event.params.lastLeafIndex.toI32()
@@ -68,8 +74,10 @@ export function handleReceipt(event: ReceiptEvent): void {
   let revokerId = event.params.revokerId
 
   for (let i = 0; i < noteMemos.length; i++) {
-    let note = new Note(event.transaction.hash.toHex() + "-" + event.params.lastLeafIndex.toString() + "-" + i.toString())
-    note.leafIndex = lastLeafIndex.minus(BigInt.fromI32(noteMemos.length - 1 - i)).toI32();
+    let leafIndex = lastLeafIndex.minus(BigInt.fromI32(noteMemos.length - 1 - i)).toI32();
+    // let note = new Note(event.transaction.hash.toHex() + "-" + event.params.lastLeafIndex.toString() + "-" + i.toString())
+    let note = new Note(leafIndex.toString())
+    note.leafIndex = leafIndex
     // note.leafIndex = lastLeafIndex.toI32() - noteMemos.length + i
     note.revokerId = revokerId
     note.memo = noteMemos[i]
@@ -78,7 +86,8 @@ export function handleReceipt(event: ReceiptEvent): void {
   }
 
   // Create and save the History entity
-  let history = new History(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
+  // let history = new History(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
+  let history = new History(id.toHex())
   
   history.txType = event.params.txType as i32
   history.revokerId = event.params.revokerId
