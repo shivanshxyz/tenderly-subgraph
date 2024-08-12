@@ -70,6 +70,7 @@ export function handleReceipt(event: ReceiptEvent): void {
   receipt.save()
 
   let noteMemos = event.params.noteMemos
+  let keyMemos = event.params.keyMemos
   let lastLeafIndex = event.params.lastLeafIndex
   let revokerId = event.params.revokerId
 
@@ -80,7 +81,8 @@ export function handleReceipt(event: ReceiptEvent): void {
     note.leafIndex = leafIndex
     // note.leafIndex = lastLeafIndex.toI32() - noteMemos.length + i
     note.revokerId = revokerId
-    note.memo = noteMemos[i]
+    note.encryptedNote = noteMemos[i]
+    note.encryptedKey = keyMemos[i+1]
     note.timestamp = event.block.timestamp
     note.save()
   }

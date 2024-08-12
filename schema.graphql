@@ -24,7 +24,8 @@ type Note @entity {
   id: ID!
   leafIndex: Int!
   revokerId: Int!
-  memo: Bytes!
+  encryptedKey: Bytes!
+  encryptedNote: Bytes!
   timestamp: BigInt!
 }
 
