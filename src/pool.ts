@@ -1,4 +1,4 @@
-import { ethereum, Bytes, Address, BigInt, log, crypto } from "@graphprotocol/graph-ts"
+import { ethereum, Bytes, Address, BigInt, log, crypto, ByteArray } from "@graphprotocol/graph-ts"
 import {
   AssetAdded as AssetAddedEvent,
   Commitment as CommitmentEvent,
@@ -47,6 +47,24 @@ export function handleNullifierMarked(event: NullifierMarkedEvent): void {
   nullifierMarked.save()
 }
 
+// MemoType constants
+const FULLY_ENCRYPTED = Bytes.fromHexString('0x00');
+const SEMI_ENCRYPTED = Bytes.fromHexString('0x01');
+
+// Helper functions for slicing and concatenating hex data
+function sliceHex(data: Bytes, start: i32, end: i32): Bytes {
+  return data.subarray(start, end) as Bytes;
+}
+
+function concatHex(parts: Bytes[]): Bytes {
+  let result = new ByteArray(0);
+  for (let i = 0; i < parts.length; i++) {
+    result = result.concat(parts[i]) as Bytes;
+  }
+  return result as Bytes;
+}
+
+// Modified handleReceipt function
 export function handleReceipt(event: ReceiptEvent): void {
   let leafIndex = Bytes.fromBigInt(event.params.lastLeafIndex);
   let txHash = event.transaction.hash;
@@ -55,60 +73,96 @@ export function handleReceipt(event: ReceiptEvent): void {
   let id = crypto.keccak256(combinedBytes);
 
   let receipt = new Receipt(id.toHex());
-  receipt.txType = event.params.txType
-  receipt.revokerId = event.params.revokerId
-  receipt.lastLeafIndex = event.params.lastLeafIndex.toI32()
-  receipt.target = event.params.target
-  receipt.feeAssetId = event.params.feeAssetId
-  receipt.feeValue = event.params.feeValue
-  receipt.paymaster = event.params.paymaster
-  receipt.assetMemo = event.params.assetMemo
-  receipt.complianceMemo = event.params.complianceMemo
-  receipt.noteMemos = event.params.noteMemos
-  receipt.txHash = event.transaction.hash
+  receipt.txType = event.params.txType;
+  receipt.revokerId = event.params.revokerId;
+  receipt.lastLeafIndex = event.params.lastLeafIndex.toI32();
+  receipt.target = event.params.target;
+  receipt.feeAssetId = event.params.feeAssetId;
+  receipt.feeValue = event.params.feeValue;
+  receipt.paymaster = event.params.paymaster;
+  receipt.assetMemo = event.params.assetMemo;
+  receipt.refundMemo = event.params.refundMemo;
+  receipt.notesMemo = event.params.notesMemo;
+  receipt.txHash = event.transaction.hash;
 
-  receipt.save()
+  receipt.save();
 
-  let noteMemos = event.params.noteMemos
-  let keyMemos = event.params.keyMemos
-  let lastLeafIndex = event.params.lastLeafIndex
-  let revokerId = event.params.revokerId
+  // Parsing receipt to notes
+  let encryptedDataEncryptionKeySeed = sliceHex(event.params.notesMemo, 0, 32 * 3);
+  let encryptedRefundData = sliceHex(event.params.notesMemo, 32 * 3, 32 * 7);
 
-  for (let i = 0; i < noteMemos.length; i++) {
-    let leafIndex = lastLeafIndex.minus(BigInt.fromI32(noteMemos.length - 1 - i)).toI32();
-    // let note = new Note(event.transaction.hash.toHex() + "-" + event.params.lastLeafIndex.toString() + "-" + i.toString())
-    let note = new Note(leafIndex.toString())
-    note.leafIndex = leafIndex
-    // note.leafIndex = lastLeafIndex.toI32() - noteMemos.length + i
-    note.revokerId = revokerId
-    note.encryptedNote = noteMemos[i]
-    note.encryptedKey = keyMemos[i+1]
-    note.timestamp = event.block.timestamp
-    note.save()
+  let encryptedNotes: Bytes[] = [];
+  for (let i = 32 * 7; i < event.params.notesMemo.length; i += 32 * 4) {
+    encryptedNotes.push(sliceHex(event.params.notesMemo, i, i + 32 * 4));
+  }
+
+  let semiEncryptedNotes: Note[] = [];
+  let lastLeafIndex = event.params.lastLeafIndex.toI32();
+
+  // Handle semi-encrypted notes
+  if (event.params.refundMemo.length > 0) {
+    let refundAddress = sliceHex(event.params.refundMemo, 0, 32);
+    let assetData = sliceHex(event.params.refundMemo, 32, 64);
+
+    let assets: Bytes[] = [];
+    for (let i = 0; i < assetData.length; i += 32) {
+      assets.push(sliceHex(assetData, i, i + 32));
+    }
+
+    for (let i = assets.length - 1; i >= 0; i--) {
+      let memo = concatHex([
+        SEMI_ENCRYPTED,
+        assets[i],
+        refundAddress,
+        encryptedRefundData,
+      ]);
+
+      let note = new Note((lastLeafIndex - i).toString());
+      note.leafIndex = lastLeafIndex - i;
+      note.memo = memo;
+      note.timestamp = event.block.timestamp;
+      note.save();
+
+      semiEncryptedNotes.push(note);
+    }
+  }
+
+  let fullyEncryptedNotes: Note[] = [];
+
+  // Parse fully encrypted notes
+  for (let i = encryptedNotes.length - 1; i >= 0; i--) {
+    let memo = concatHex([FULLY_ENCRYPTED, encryptedNotes[i]]);
+    let note = new Note((lastLeafIndex - semiEncryptedNotes.length - i).toString());
+    note.leafIndex = lastLeafIndex - semiEncryptedNotes.length - i;
+    note.memo = memo;
+    note.timestamp = event.block.timestamp;
+    note.save();
+
+    fullyEncryptedNotes.push(note);
   }
 
   // Create and save the History entity
-  // let history = new History(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
-  let history = new History(id.toHex())
-  
-  history.txType = event.params.txType as i32
-  history.revokerId = event.params.revokerId
-  history.lastLeafIndex = event.params.lastLeafIndex.toI32()
-  history.target = event.params.target
-  history.feeAssetId = event.params.feeAssetId
-  history.feeValue = event.params.feeValue
-  history.paymaster = event.params.paymaster
-  history.assetMemo = event.params.assetMemo
-  history.complianceMemo = event.params.complianceMemo
-  history.noteMemos = event.params.noteMemos
-  history.timestamp = event.block.timestamp
-  history.txHash = event.transaction.hash
-  history.blockNumber = event.block.number.toI32()
-  history.gasUsed = event.receipt!.gasUsed
-  history.gasPrice = event.transaction.gasPrice
+  let history = new History(id.toHex());
 
-  
-  history.save()
+  history.txType = event.params.txType as i32;
+  history.revokerId = event.params.revokerId;
+  history.lastLeafIndex = event.params.lastLeafIndex.toI32();
+  history.target = event.params.target;
+  history.feeAssetId = event.params.feeAssetId;
+  history.feeValue = event.params.feeValue;
+  history.paymaster = event.params.paymaster;
+  history.assetMemo = event.params.assetMemo;
+  // history.complianceMemo = event.params.complianceMemo;
+  history.notesMemo = event.params.notesMemo;
+  history.refundMemo = event.params.refundMemo;
+  history.keysMemo = event.params.keysMemo;
+  history.timestamp = event.block.timestamp;
+  history.txHash = event.transaction.hash;
+  history.blockNumber = event.block.number.toI32();
+  history.gasUsed = event.receipt!.gasUsed;
+  history.gasPrice = event.transaction.gasPrice;
+
+  history.save();
 }
 
 export function handleRevokerRegistered(event: RevokerRegisteredEvent): void {

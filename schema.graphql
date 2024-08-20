@@ -8,8 +8,10 @@ type Receipt @entity {
   feeValue: BigInt!
   paymaster: Bytes!
   assetMemo: Bytes!
-  complianceMemo: Bytes!
-  noteMemos: [Bytes!]!
+  # complianceMemo: Bytes!
+  # noteMemos: [Bytes!]!
+  notesMemo: Bytes!
+  refundMemo: Bytes!
   txHash: Bytes!
 }
 
@@ -24,6 +26,7 @@ type Note @entity {
   id: ID!
   leafIndex: Int!
   revokerId: Int!
+  memo: Bytes!
   encryptedKey: Bytes!
   encryptedNote: Bytes!
   timestamp: BigInt!
@@ -39,8 +42,10 @@ type History @entity {
   feeValue: BigInt!
   paymaster: Bytes!
   assetMemo: Bytes!
-  complianceMemo: Bytes!
-  noteMemos: [Bytes!]!
+  refundMemo: Bytes!
+  keysMemo: Bytes!
+  # complianceMemo: Bytes!
+  notesMemo: Bytes!
   timestamp: BigInt!
   txHash: Bytes!
   blockNumber: Int!
