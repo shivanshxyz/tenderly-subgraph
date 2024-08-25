@@ -1,4 +1,4 @@
-import { ethereum, Bytes, Address, BigInt, log, crypto, ByteArray } from "@graphprotocol/graph-ts"
+import { Bytes, crypto } from "@graphprotocol/graph-ts";
 import {
   AssetAdded as AssetAddedEvent,
   Commitment as CommitmentEvent,
@@ -6,105 +6,50 @@ import {
   Receipt as ReceiptEvent,
   RevokerRegistered as RevokerRegisteredEvent,
   RevokerStatusUpdated as RevokerStatusUpdatedEvent,
-  RegisterAddress as RegisterAddressEvent
-} from "../generated/Pool/Pool"
+  RegisterAddress as RegisterAddressEvent,
+} from "../generated/Pool/Pool";
 import {
-  AssetAdded,
+  Asset,
   Commitment,
-  Note,
+  NoteMemo,
   NullifierMarked,
   Receipt,
   RevokerData,
   History,
-  ZTransaction,
-  RegisterAddress,
-} from "../generated/schema"
+  RegisteredAddress,
+} from "../generated/schema";
+
+import { FULLY_ENCRYPTED, SEMI_ENCRYPTED, sliceHex, concatHex } from "./utils";
 
 // Event handler functions
 export function handleAssetAdded(event: AssetAddedEvent): void {
-  let asset = new AssetAdded(
-    event.params.assetId.toString()
-  )
-  asset.assetAddress = event.params.assetAddress
-  asset.assetId = event.params.assetId
-  // asset.blockNumber = event.block.number
-  // asset.blockTimestamp = event.block.timestamp
-  // asset.transactionHash = event.transaction.hash
-  asset.save()
+  let asset = new Asset(event.params.assetId.toString());
+  asset.assetId = event.params.assetId;
+  asset.assetAddress = event.params.assetAddress;
+  asset.isActive = true;
+  asset.save();
 }
 
 export function handleCommitment(event: CommitmentEvent): void {
-  let commitment = new Commitment(event.params.leafIndex.toString())
-  commitment.leafIndex = event.params.leafIndex.toI32()
-  commitment.commitment = event.params.commitment
-  commitment.save()
+  let id = event.params.leafIndex.toString();
+  
+  // Check if a Commitment entity with this ID already exists
+  let commitment = Commitment.load(id);
+  
+  // Only create a new entity if it doesn't already exist
+  if (!commitment) {
+    commitment = new Commitment(id);
+    commitment.leafIndex = event.params.leafIndex.toI32();
+    commitment.commitment = event.params.commitment;
+    commitment.save();
+  }
 }
 
 export function handleNullifierMarked(event: NullifierMarkedEvent): void {
-  let nullifierMarked = new NullifierMarked(event.params.nullifier.toString())
-  nullifierMarked.nullifier = event.params.nullifier
-  nullifierMarked.markLeafIndex = event.params.markLeafIndex.toI32()
-  nullifierMarked.save()
-}
-
-// MemoType constants
-const FULLY_ENCRYPTED = Bytes.fromHexString('0x00');
-const SEMI_ENCRYPTED = Bytes.fromHexString('0x01');
-
-// Helper functions for slicing and concatenating hex data
-// function sliceHex(data: Bytes, start: i32, end: i32): Bytes {
-//   return data.subarray(start, end) as Bytes;
-// }
-function sliceHex(hex: string, start: i32, end: i32): Bytes {
-  // Remove the '0x' prefix if it exists
-  if (hex.startsWith("0x")) {
-    hex = hex.slice(2);
-  }
-
-  // Calculate the start and end indices, considering each hex character represents half a byte
-  let startIdx = start * 2;
-  let endIdx = end * 2;
-
-  // Ensure indices are within bounds
-  if (startIdx > hex.length || endIdx > hex.length) {
-    log.error("sliceHex out of bounds: startIdx={}, endIdx={}, length={}", [
-      startIdx.toString(),
-      endIdx.toString(),
-      hex.length.toString(),
-    ]);
-    return Bytes.empty(); // Return an empty Bytes object if out of bounds
-  }
-
-  // Slice the string
-  let slicedHex = hex.slice(startIdx, endIdx);
-
-  // Convert the sliced hex string back to Bytes and return
-  return Bytes.fromHexString("0x" + slicedHex) as Bytes;
-}
-
-
-// function concatHex(parts: Bytes[]): Bytes {
-//   let result = new ByteArray(0);
-//   for (let i = 0; i < parts.length; i++) {
-//     result = result.concat(parts[i]) as Bytes;
-//   }
-//   return result as Bytes;
-// }
-
-function concatHex(hexStrings: string[]): string {
-  // Initialize an empty string to store the concatenated result
-  let result = "";
-
-  for (let i = 0; i < hexStrings.length; i++) {
-    // Remove the '0x' prefix if it exists
-    let hex = hexStrings[i].startsWith("0x") ? hexStrings[i].slice(2) : hexStrings[i];
-
-    // Add the hex string to the result
-    result += hex;
-  }
-
-  // Return the concatenated result with the '0x' prefix
-  return "0x" + result;
+  let nullifierMarked = new NullifierMarked(event.params.nullifier.toString());
+  nullifierMarked.nullifier = event.params.nullifier;
+  nullifierMarked.markLeafIndex = event.params.markLeafIndex.toI32();
+  nullifierMarked.save();
 }
 
 // Modified handleReceipt function
@@ -112,7 +57,6 @@ export function handleReceipt(event: ReceiptEvent): void {
   let leafIndex = Bytes.fromBigInt(event.params.lastLeafIndex);
   let txHash = event.transaction.hash;
   let combinedBytes = leafIndex.concat(txHash);
-
   let id = crypto.keccak256(combinedBytes);
 
   let receipt = new Receipt(id.toHex());
@@ -127,60 +71,109 @@ export function handleReceipt(event: ReceiptEvent): void {
   receipt.refundMemo = event.params.refundMemo;
   receipt.notesMemo = event.params.notesMemo;
   receipt.txHash = event.transaction.hash;
-
   receipt.save();
 
-  // Parsing receipt to notes
-  let encryptedDataEncryptionKeySeed = sliceHex(event.params.notesMemo.toHexString(), 0, 32 * 3);
+  ////////////////////////////////////////
+  ///       Parse notes memo           //
+  ////////////////////////////////////////
+
+  // First 3, 32-byte chunks are the encrypted data decryption key seed
+  let encryptedDataEncryptionKeySeed = sliceHex(
+    event.params.notesMemo.toHexString(),
+    0,
+    32 * 3
+  );
+
+  // Next 4, 32-byte chunks are the encrypted refund data
   let encryptedRefundData = sliceHex(event.params.notesMemo.toHexString(), 32 * 3, 32 * 7);
 
+  // The next bytes are the encrypted notes: 4, 32-byte chunks per note
   let encryptedNotes: Bytes[] = [];
   for (let i = 32 * 7; i < event.params.notesMemo.length; i += 32 * 4) {
     encryptedNotes.push(sliceHex(event.params.notesMemo.toHexString(), i, i + 32 * 4));
   }
 
-  let semiEncryptedNotes: Note[] = [];
+  ////////////////////////////////////////
+  ///       Parse keys memo             //
+  ////////////////////////////////////////
+
+  // First 80 bytes are the encrypted refund data decryption key
+  let encryptedRefundDataDecryptionKey = sliceHex(event.params.keysMemo.toHexString(), 0, 80);
+
+  // The next 80 bytes chunks are the encrypted notes decryption keys
+  const encryptedNotesDecryptionKeys: Bytes[] = [];
+  for (let i = 80; i < event.params.keysMemo.length; i += 80) {
+    encryptedNotesDecryptionKeys.push(
+      sliceHex(event.params.keysMemo.toHexString(), i, i + 80)
+    );
+  }
+
   let lastLeafIndex = event.params.lastLeafIndex.toI32();
 
-  // Handle semi-encrypted notes
-  if (event.params.refundMemo.length > 0) {
-    let refundAddress = sliceHex(event.params.refundMemo.toHexString(), 0, 32);
-    let assetData = sliceHex(event.params.refundMemo.toHexString(), 32, 64);
+  ////////////////////////////////////////
+  ///       Process any refund notes    //
+  ////////////////////////////////////////
+  let semiEncryptedNotes: NoteMemo[] = [];
 
+  // For adaptor transactions (where semi-encrypted notes are created), refundMemo
+  // is non-empty. It contains adaptor-output asset info and refund address.
+  if (event.params.refundMemo.length > 0) {
+    // First 32 bytes are the refund address
+    let refundAddress = sliceHex(event.params.refundMemo.toHexString(), 0, 32);
+
+    // Next words are adaptor-output assets info (i.e. assetId + value)
+    let assetData = sliceHex(
+      event.params.refundMemo.toHexString(),
+      32,
+      event.params.refundMemo.length
+    );
+
+    // Each asset info is 31 bytes (3 bytes assetId + 28 bytes value)
     let assets: Bytes[] = [];
-    for (let i = 0; i < assetData.length; i += 32) {
-      assets.push(sliceHex(assetData.toHexString(), i, i + 32));
+    for (let i = 0; i < assetData.length; i += 31) {
+      assets.push(sliceHex(assetData.toHexString(), i, i + 31));
     }
 
-    for (let i = assets.length - 1; i >= 0; i--) {
-      let memo = concatHex([
-        SEMI_ENCRYPTED.toHexString(),
+    // Adaptor-output notes are appended last, so get the last indices when inserted into tree
+    for (let i = 0; i < assets.length; i++) {
+      let leafIndex = lastLeafIndex - assets.length + 1 + i;
+
+      let note = new NoteMemo(leafIndex.toString());
+      note.leafIndex = leafIndex;
+      note.memoType = SEMI_ENCRYPTED.toU32();
+      note.encryptedKey = encryptedRefundDataDecryptionKey;
+      let encryptedNote: string = concatHex([
         assets[i].toHexString(),
         refundAddress.toHexString(),
         encryptedRefundData.toHexString(),
       ]);
-
-      let note = new Note((lastLeafIndex - i).toString());
-      note.leafIndex = lastLeafIndex - i;
-      note.revokerId = event.params.revokerId;
-      note.memo = Bytes.fromHexString(memo);
+      note.encryptedNote = Bytes.fromHexString(encryptedNote)
       note.timestamp = event.block.timestamp;
+      note.revokerId = event.params.revokerId;
+
       note.save();
 
       semiEncryptedNotes.push(note);
     }
   }
 
-  let fullyEncryptedNotes: Note[] = [];
+  ////////////////////////////////////////
+  ///       Process any tx notes        //
+  ////////////////////////////////////////
+  let fullyEncryptedNotes: NoteMemo[] = [];
 
   // Parse fully encrypted notes
-  for (let i = encryptedNotes.length - 1; i >= 0; i--) {
-    let memo = concatHex([FULLY_ENCRYPTED.toHexString(), encryptedNotes[i].toHexString()]);
-    let note = new Note((lastLeafIndex - semiEncryptedNotes.length - i).toString());
-    note.leafIndex = lastLeafIndex - semiEncryptedNotes.length - i;
-    note.memo = Bytes.fromHexString(memo);
-    note.revokerId = event.params.revokerId;
+  for (let i = 0; i < encryptedNotes.length; i++) {
+    let leafIndex =
+      lastLeafIndex - semiEncryptedNotes.length - encryptedNotes.length + 1 + i;
+
+    let note = new NoteMemo(leafIndex.toString());
+    note.leafIndex = leafIndex;
+    note.memoType = FULLY_ENCRYPTED.toU32();
+    note.encryptedKey = encryptedNotesDecryptionKeys[i];
+    note.encryptedNote = encryptedNotes[i];
     note.timestamp = event.block.timestamp;
+    note.revokerId = event.params.revokerId;
     note.save();
 
     fullyEncryptedNotes.push(note);
@@ -197,7 +190,6 @@ export function handleReceipt(event: ReceiptEvent): void {
   history.feeValue = event.params.feeValue;
   history.paymaster = event.params.paymaster;
   history.assetsMemo = event.params.assetsMemo;
-  // history.complianceMemo = event.params.complianceMemo;
   history.notesMemo = event.params.notesMemo;
   history.refundMemo = event.params.refundMemo;
   history.keysMemo = event.params.keysMemo;
@@ -211,36 +203,38 @@ export function handleReceipt(event: ReceiptEvent): void {
 }
 
 export function handleRevokerRegistered(event: RevokerRegisteredEvent): void {
-  let revoker = new RevokerData(event.params.id.toString())
+  let revoker = new RevokerData(event.params.id.toString());
   revoker.revokerPublicKey = [
     event.params.revokerPublicKey[0],
-    event.params.revokerPublicKey[1]
-  ]
+    event.params.revokerPublicKey[1],
+  ];
   revoker.encryptionPublicKey = [
     event.params.encryptionPublicKey[0],
-    event.params.encryptionPublicKey[1]
-  ]
-  revoker.metadata = event.params.metadata
-  revoker.status = true
-  revoker.revokerId = event.params.id.toI32()
-  revoker.save()
+    event.params.encryptionPublicKey[1],
+  ];
+  revoker.metadata = event.params.metadata;
+  revoker.status = true;
+  revoker.revokerId = event.params.id.toI32();
+  revoker.save();
 }
 
-export function handleRevokerStatusUpdated(event: RevokerStatusUpdatedEvent): void {
-  let revoker = RevokerData.load(event.params.id.toString())
+export function handleRevokerStatusUpdated(
+  event: RevokerStatusUpdatedEvent
+): void {
+  let revoker = RevokerData.load(event.params.id.toString());
   if (revoker) {
-    revoker.status = event.params.status
-    revoker.save()
+    revoker.status = event.params.status;
+    revoker.save();
   }
 }
 
 export function handleRegisterAddress(event: RegisterAddressEvent): void {
-  let registerAddress = new RegisterAddress(event.transaction.hash.toHex())
+  let registerAddress = new RegisteredAddress(event.transaction.hash.toHex());
 
-  registerAddress.publicAddress = event.params.publicAddress
-  registerAddress.rootAddress = event.params.rootAddress
-  registerAddress.leafIndex = event.params.leafIndex.toI32()
-  registerAddress.shieldedAddress = event.params.shieldedAddress
+  registerAddress.publicAddress = event.params.publicAddress;
+  registerAddress.rootAddress = event.params.rootAddress;
+  registerAddress.leafIndex = event.params.leafIndex.toI32();
+  registerAddress.shieldedAddress = event.params.shieldedAddress;
 
-  registerAddress.save()
+  registerAddress.save();
 }

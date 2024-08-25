@@ -389,44 +389,6 @@
     },
     {
         "type": "function",
-        "name": "isKnownAddressTreeRoot",
-        "inputs": [
-            {
-                "name": "root",
-                "type": "uint256",
-                "internalType": "uint256"
-            }
-        ],
-        "outputs": [
-            {
-                "name": "",
-                "type": "bool",
-                "internalType": "bool"
-            }
-        ],
-        "stateMutability": "view"
-    },
-    {
-        "type": "function",
-        "name": "isKnownCommitmentTreeRoot",
-        "inputs": [
-            {
-                "name": "root",
-                "type": "uint256",
-                "internalType": "uint256"
-            }
-        ],
-        "outputs": [
-            {
-                "name": "",
-                "type": "bool",
-                "internalType": "bool"
-            }
-        ],
-        "stateMutability": "view"
-    },
-    {
-        "type": "function",
         "name": "owner",
         "inputs": [],
         "outputs": [
@@ -1211,6 +1173,17 @@
                 "name": "assetAddress",
                 "type": "address",
                 "internalType": "address"
+            }
+        ]
+    },
+    {
+        "type": "error",
+        "name": "DuplicateRevoker",
+        "inputs": [
+            {
+                "name": "publicKey",
+                "type": "uint256[2]",
+                "internalType": "uint256[2]"
             }
         ]
     },

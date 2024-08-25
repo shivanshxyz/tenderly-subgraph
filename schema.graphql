@@ -1,4 +1,4 @@
-type Receipt @entity {
+type Receipt @entity(immutable: true) {
   id: ID!
   txType: Int!
   revokerId: Int!
@@ -7,32 +7,31 @@ type Receipt @entity {
   feeAssetId: Int!
   feeValue: BigInt!
   paymaster: Bytes!
+  keysMemo: Bytes
   assetsMemo: Bytes!
-  # complianceMemo: Bytes!
-  # noteMemos: [Bytes!]!
   notesMemo: Bytes!
   refundMemo: Bytes!
   txHash: Bytes!
 }
 
-enum ZTransactionType {
-    DEPOSIT,
-    TRANSFER,
-    WITHDRAW,
-    CONVERT
+enum ShieldedTransactionType {
+  DEPOSIT
+  TRANSFER
+  WITHDRAW
+  CONVERT
 }
 
-type Note @entity {
+type NoteMemo @entity(immutable: true) {
   id: ID!
+  memoType: Int!
   leafIndex: Int!
   revokerId: Int!
-  memo: Bytes!
-  encryptedKey: Bytes
-  encryptedNote: Bytes
+  encryptedKey: Bytes!
+  encryptedNote: Bytes!
   timestamp: BigInt!
 }
 
-type History @entity {
+type History @entity(immutable: true) {
   id: ID!
   txType: Int!
   revokerId: Int!
@@ -44,7 +43,6 @@ type History @entity {
   assetsMemo: Bytes!
   refundMemo: Bytes!
   keysMemo: Bytes!
-  # complianceMemo: Bytes!
   notesMemo: Bytes!
   timestamp: BigInt!
   txHash: Bytes!
@@ -53,12 +51,11 @@ type History @entity {
   gasUsed: BigInt!
 }
 
-type Commitment @entity {
+type Commitment @entity(immutable: true) {
   id: ID!
   leafIndex: Int!
   commitment: BigInt!
 }
-
 
 type RevokerData @entity {
   id: ID!
@@ -69,25 +66,20 @@ type RevokerData @entity {
   status: Boolean!
 }
 
-type AssetAdded @entity(immutable: true) {
+type Asset @entity {
   id: String!
   assetAddress: Bytes! # address
   assetId: Int! # uint24
-  # blockNumber: BigInt!
-  # blockTimestamp: BigInt!
-  # transactionHash: Bytes!
+  isActive: Boolean! # default true
 }
 
-type NullifierMarked @entity {
+type NullifierMarked @entity(immutable: true) {
   id: ID!
   nullifier: BigInt!
   markLeafIndex: Int!
-  # blockNumber: BigInt!
-  # blockTimestamp: BigInt!
-  # transactionHash: Bytes!
 }
 
-type ZTransaction @entity {
+type ShieldedTransaction @entity {
   id: Bytes!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
@@ -109,10 +101,10 @@ type ZTransaction @entity {
   methodId: String!
 }
 
-type RegisterAddress @entity {
+type RegisteredAddress @entity(immutable: true) {
   id: ID!
+  leafIndex: Int
   publicAddress: Bytes
   rootAddress: BigInt
-  leafIndex: Int
   shieldedAddress: Bytes
 }
