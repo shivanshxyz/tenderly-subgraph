@@ -7,7 +7,7 @@ type Receipt @entity {
   feeAssetId: Int!
   feeValue: BigInt!
   paymaster: Bytes!
-  assetMemo: Bytes!
+  assetsMemo: Bytes!
   # complianceMemo: Bytes!
   # noteMemos: [Bytes!]!
   notesMemo: Bytes!
@@ -27,8 +27,8 @@ type Note @entity {
   leafIndex: Int!
   revokerId: Int!
   memo: Bytes!
-  encryptedKey: Bytes!
-  encryptedNote: Bytes!
+  encryptedKey: Bytes
+  encryptedNote: Bytes
   timestamp: BigInt!
 }
 
@@ -41,7 +41,7 @@ type History @entity {
   feeAssetId: Int!
   feeValue: BigInt!
   paymaster: Bytes!
-  assetMemo: Bytes!
+  assetsMemo: Bytes!
   refundMemo: Bytes!
   keysMemo: Bytes!
   # complianceMemo: Bytes!
@@ -111,7 +111,7 @@ type ZTransaction @entity {
 
 type RegisterAddress @entity {
   id: ID!
-  sender: Bytes
+  publicAddress: Bytes
   rootAddress: BigInt
   leafIndex: Int
   shieldedAddress: Bytes

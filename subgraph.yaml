@@ -8,9 +8,9 @@ dataSources:
     name: Pool
     network: optimism-sepolia
     source:
-      address: "0xF7839c7991975A4dd03d212A869ED39B212DeB4a"
+      address: "0x5120929A0E9b11cE2013D3E90F471d4cD2DF108f"
       abi: Pool
-      startBlock: 14149220
+      startBlock: 16303294
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -35,7 +35,7 @@ dataSources:
           handler: handleAssetAdded
         - event: NullifierMarked(indexed uint256,uint32)
           handler: handleNullifierMarked
-        - event: Receipt(indexed uint8,indexed uint16,uint32,address,uint24,uint96,address,bytes,bytes,bytes[])
+        - event: Receipt(indexed uint8,indexed uint16,uint32,address,uint24,uint96,address,bytes,bytes,bytes,bytes)
           handler: handleReceipt
           receipt: true
         - event: RevokerRegistered(indexed uint256,uint256[2],uint256[2],bytes)
