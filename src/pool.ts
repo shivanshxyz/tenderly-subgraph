@@ -32,17 +32,11 @@ export function handleAssetAdded(event: AssetAddedEvent): void {
 
 export function handleCommitment(event: CommitmentEvent): void {
   let id = event.params.leafIndex.toString();
-  
-  // Check if a Commitment entity with this ID already exists
-  let commitment = Commitment.load(id);
-  
-  // Only create a new entity if it doesn't already exist
-  if (!commitment) {
-    commitment = new Commitment(id);
-    commitment.leafIndex = event.params.leafIndex.toI32();
-    commitment.commitment = event.params.commitment;
-    commitment.save();
-  }
+
+  let commitment = new Commitment(event.params.leafIndex.toString());
+  commitment.leafIndex = event.params.leafIndex.toI32();
+  commitment.commitment = event.params.commitment;
+  commitment.save();
 }
 
 export function handleNullifierMarked(event: NullifierMarkedEvent): void {
@@ -118,15 +112,11 @@ export function handleReceipt(event: ReceiptEvent): void {
   // For adaptor transactions (where semi-encrypted notes are created), refundMemo
   // is non-empty. It contains adaptor-output asset info and refund address.
   if (event.params.refundMemo.length > 0) {
-    // First 32 bytes are the refund address
-    let refundAddress = sliceHex(event.params.refundMemo.toHexString(), 0, 32);
+    //// First 32 bytes are the refund address
+    // let refundAddress = sliceHex(event.params.refundMemo, 0, 32);
 
-    // Next words are adaptor-output assets info (i.e. assetId + value)
-    let assetData = sliceHex(
-      event.params.refundMemo.toHexString(),
-      32,
-      event.params.refundMemo.length
-    );
+    // Refund memo are adaptor-output assets info (i.e. assetId + value)
+    let assetData = event.params.refundMemo;
 
     // Each asset info is 31 bytes (3 bytes assetId + 28 bytes value)
     let assets: Bytes[] = [];
@@ -144,7 +134,6 @@ export function handleReceipt(event: ReceiptEvent): void {
       note.encryptedKey = encryptedRefundDataDecryptionKey;
       let encryptedNote: string = concatHex([
         assets[i].toHexString(),
-        refundAddress.toHexString(),
         encryptedRefundData.toHexString(),
       ]);
       note.encryptedNote = Bytes.fromHexString(encryptedNote)
