@@ -4,11 +4,12 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ testing",
+    "deploy": "graph deploy tenderly-subgraph --ipfs http://localhost:5001 --node http://localhost:8020",
     "create-local": "graph create --node http://localhost:8020/ testing",
     "remove-local": "graph remove --node http://localhost:8020/ testing",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 testing",
-    "test": "graph test"
+    "test": "graph test",
+    "create": "graph create tenderly-subgraph --node http://localhost:8020"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.72.2",
