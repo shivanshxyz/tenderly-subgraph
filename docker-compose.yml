@@ -19,7 +19,7 @@ services:
       postgres_pass: let-me-in
       postgres_db: graph-node
       ipfs: "ipfs:5001"
-      ethereum: "mainnet:https://virtual.mainnet.rpc.tenderly.co/e9fd0da2-e8a7-4d19-9bf8-71ddf437f04c"
+      ethereum: "tenderly-7800:https://virtual.mainnet.rpc.tenderly.co/dbb8480d-5184-4f4f-a363-b8c004746a67"
       GRAPH_LOG: info
   ipfs:
     image: ipfs/kubo:v0.17.0
