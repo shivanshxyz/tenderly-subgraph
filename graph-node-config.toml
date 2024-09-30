@@ -1,0 +1,36 @@
+
+# [store]
+# [store.primary]
+# connection = "postgresql://doadmin:AVNS_n0HSVIvpAdQpsGj4MAh@db-tenderly-subgraph-do-user-16241399-0.f.db.ondigitalocean.com:25060/defaultdb?sslmode=require"
+# pool_size = 10
+
+# [chains]
+# ingestor = "graph_node"
+
+# [chains.mainnet]
+# shard = "primary"
+# provider = [ { label = "goerli", url = "https://virtual.mainnet.rpc.tenderly.co/8a8e6e24-ac21-49ce-b433-86d9e0c4469d", features = ["archive", "traces"] } ]
+
+# [deployment]
+# [[deployment.rule]]
+# indexers = [ "graph_node" ]
+
+# [ipfs]
+# url = "https://ipfs-kubo-server-uwcyw.ondigitalocean.app" 
+
+# [http]
+# port = 8030
+
+# [ws]
+# port = 8031
+
+# [admin]
+# port = 8032
+
+# [index-node]
+# port = 8033
+
+
+
+[chains.tenderly-7800]
+provider = { label = "tenderly-7800", url = "https://virtual.mainnet.rpc.tenderly.co/dbb8480d-5184-4f4f-a363-b8c004746a67" }
