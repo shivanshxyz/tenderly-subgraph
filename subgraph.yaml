@@ -8,9 +8,9 @@ dataSources:
     name: Pool
     network: tenderly-7800
     source:
-      address: "0x8eb83d9ede9f044c3e004dcb71cd0df0b1413bcb"
+      address: "0x9163043b553adef9fe44b088922560cfbfdec51b"
       abi: Pool
-      startBlock: 20841507
+      startBlock: 20841617
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
