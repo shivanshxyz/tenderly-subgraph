@@ -21,6 +21,7 @@ services:
       ipfs: "ipfs:5001"
       ethereum: "tenderly-7800:https://virtual.mainnet.rpc.tenderly.co/c4540b43-dd39-4c0a-800b-2bcd3d0d635f"
       GRAPH_LOG: info
+      ETHEREUM_POLLING_INTERVAL: 10000
   ipfs:
     image: ipfs/kubo:v0.17.0
     ports:
