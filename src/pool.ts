@@ -17,6 +17,7 @@ import {
   RevokerData,
   History,
   RegisteredAddress,
+  TransactionData,
 } from "../generated/schema";
 
 import { FULLY_ENCRYPTED, SEMI_ENCRYPTED, sliceHex, concatHex } from "./utils";
@@ -139,6 +140,7 @@ export function handleReceipt(event: ReceiptEvent): void {
       note.encryptedNote = Bytes.fromHexString(encryptedNote)
       note.timestamp = event.block.timestamp;
       note.revokerId = event.params.revokerId;
+      note.blockNumber = event.block.number;
 
       note.save();
 
@@ -163,6 +165,7 @@ export function handleReceipt(event: ReceiptEvent): void {
     note.encryptedNote = encryptedNotes[i];
     note.timestamp = event.block.timestamp;
     note.revokerId = event.params.revokerId;
+    note.blockNumber = event.block.number;
     note.save();
 
     fullyEncryptedNotes.push(note);
@@ -189,6 +192,12 @@ export function handleReceipt(event: ReceiptEvent): void {
   history.gasPrice = event.transaction.gasPrice;
 
   history.save();
+
+
+  let txData = new TransactionData(id.toHex())
+
+  txData.timestamp = event.block.timestamp;
+  
 }
 
 export function handleRevokerRegistered(event: RevokerRegisteredEvent): void {
@@ -224,6 +233,8 @@ export function handleRegisterAddress(event: RegisterAddressEvent): void {
   registerAddress.rootAddress = event.params.rootAddress;
   registerAddress.leafIndex = event.params.leafIndex.toI32();
   registerAddress.shieldedAddress = event.params.shieldedAddress;
+  registerAddress.blockNumber = event.block.number;
+  registerAddress.blockTimestamp = event.block.timestamp;
 
   registerAddress.save();
 }

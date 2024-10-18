@@ -14,6 +14,17 @@ type Receipt @entity(immutable: true) {
   txHash: Bytes!
 }
 
+type TransactionData @entity {
+  id: ID!
+  timestamp: BigInt!
+  symbol: String!
+  user: Bytes!
+  amount: BigDecimal!
+  fee: BigDecimal!
+  txHash: Bytes!
+  txType: Int!
+}
+
 enum ShieldedTransactionType {
   DEPOSIT
   TRANSFER
@@ -29,6 +40,7 @@ type NoteMemo @entity(immutable: true) {
   encryptedKey: Bytes!
   encryptedNote: Bytes!
   timestamp: BigInt!
+  blockNumber: BigInt!
 }
 
 type History @entity(immutable: true) {
@@ -107,4 +119,6 @@ type RegisteredAddress @entity(immutable: true) {
   publicAddress: Bytes
   rootAddress: BigInt
   shieldedAddress: Bytes
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
 }
