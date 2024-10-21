@@ -115,10 +115,10 @@ type ShieldedTransaction @entity {
 
 type RegisteredAddress @entity(immutable: true) {
   id: ID!
-  leafIndex: Int
-  publicAddress: Bytes
-  rootAddress: BigInt
-  shieldedAddress: Bytes
+  leafIndex: Int!
+  publicAddress: Bytes!
+  rootAddress: BigInt!
+  shieldedAddress: Bytes!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
 }
